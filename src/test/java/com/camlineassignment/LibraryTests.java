@@ -87,7 +87,7 @@ public class LibraryTests {
 
     @Test
     void returnBookSucceedsWhenBookIsCheckedOutByMember() {
-        String memberId = "M002";
+        String memberId = "M003";
         String bookId = "9781617294945";
         assertTrue(repo.checkout(memberId, bookId));
 
