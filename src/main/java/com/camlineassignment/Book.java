@@ -1,7 +1,9 @@
+package com.camlineassignment;
+
 public class Book {
-    private String title;
-    private String author;
-    private String isbn;
+    private final String title;
+    private final String author;
+    private final String isbn;
     private int availableCopies;
 
     public Book(String title, String author, String isbn, int availableCopies) {
@@ -35,5 +37,10 @@ public class Book {
 
     public void incrementAvailableCopies() {
         availableCopies++;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s by %s (ISBN: %s, available: %d)", title, author, isbn, availableCopies);
     }
 }
