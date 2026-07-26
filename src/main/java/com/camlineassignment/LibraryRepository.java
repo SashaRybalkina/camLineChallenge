@@ -33,6 +33,9 @@ public class LibraryRepository {
         checkouts.put("M002", new ArrayList<>());
         checkouts.put("M003", new ArrayList<>());
         checkouts.get("M001").add("9780134685991");
+        checkouts.get("M002").add("9780134685991");
+        checkouts.get("M002").add("9781617294945");
+        checkouts.get("M002").add("9781492056270");
     }
 
     public Map<String, Book> getBooks() {

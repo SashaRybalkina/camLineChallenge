@@ -126,34 +126,38 @@ public class LibraryTests {
 
     @Test
     void serviceCheckoutSucceedsWhenRulesAreSatisfied() {
-        String result = service.checkout("M002", "9781617294945");
+        String successResult = service.checkout("M003", "9781617294945");
+        String failureResult = service.checkout("M002", "9780134685991");
 
-        assertEquals("Checkout successful.", result);
-        assertTrue(repo.getCheckouts().get("M002").contains("9781617294945"));
+        assertEquals("Checkout successful.", successResult);
+        assertTrue(repo.getCheckouts().get("M003").contains("9781617294945"));
+        assertEquals("Member has reached the checkout limit.", failureResult);
     }
 
     @Test
     void serviceCheckoutFailsWhenNoCopiesAreAvailable() {
         String bookId = "9781492056270";
+        String successResult = service.checkout("M003", "9780134685991");
         while (repo.getBooks().get(bookId).getAvailableCopies() > 0) {
             repo.getBooks().get(bookId).decrementAvailableCopies();
         }
 
-        String result = service.checkout("M002", bookId);
+        String failureResult = service.checkout("M003", bookId);
 
-        assertEquals("No copies available.", result);
-        assertFalse(repo.getCheckouts().get("M002").contains(bookId));
+        assertEquals("Checkout successful.", successResult);
+        assertTrue(repo.getCheckouts().get("M003").contains("9780134685991"));
+        assertEquals("No copies available.", failureResult);
+        assertFalse(repo.getCheckouts().get("M003").contains(bookId));
     }
 
     @Test
     void serviceCheckoutFailsWhenMemberAlreadyHasThreeBooks() {
         String memberId = "M002";
-        repo.getCheckouts().get(memberId).add("9780134685991");
-        repo.getCheckouts().get(memberId).add("9781617294945");
-        repo.getCheckouts().get(memberId).add("9781492056270");
+        String failureResult = service.checkout(memberId, "9780134685991");
+        assertTrue(repo.returnBook(memberId, "9780134685991"));
+        String successResult = service.checkout(memberId, "9780134685991");
 
-        String result = service.checkout(memberId, "9780134685991");
-
-        assertEquals("Member has reached the checkout limit.", result);
+        assertEquals("Member has reached the checkout limit.", failureResult);
+        assertEquals("Checkout successful.", successResult);
     }
 }
