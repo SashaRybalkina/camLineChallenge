@@ -57,7 +57,15 @@ public class LibraryRepository {
         return checkouts;
     }
 
-    public String checkout(String memberId, String bookId) {
+    public Boolean memberExists(String memberId) {
+        return members.containsKey(memberId);
+    }
+
+    public Boolean bookExists(String bookId) {
+        return books.containsKey(bookId);
+    }
+
+    public Boolean checkout(String memberId, String bookId) {
         try {
             if (!checkouts.containsKey(memberId)) {
                 checkouts.put(memberId, new java.util.ArrayList<>());
@@ -65,26 +73,25 @@ public class LibraryRepository {
             checkouts.get(memberId).add(bookId);
 
             books.get(bookId).decrementAvailableCopies();
-
-            return "Checkout successful";
+            return true;
         } catch (Exception e) {
-            return "Checkout failed: " + e.getMessage();
+            return false;
         }
     }
 
-    public String returnBook(String memberId, String bookId) {
+    public Boolean returnBook(String memberId, String bookId) {
         try {
             if (checkouts.containsKey(memberId) && checkouts.get(memberId).contains(bookId)) {
                 checkouts.get(memberId).remove(bookId);
 
                 books.get(bookId).incrementAvailableCopies();
 
-                return "Return successful";
+                return true;
             } else {
-                return "Return failed: Book not found in member's checkouts";
+                return false;
             }
         } catch (Exception e) {
-            return "Return failed: " + e.getMessage();
+            return false;
         }
     }
 
