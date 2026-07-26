@@ -14,10 +14,12 @@ import org.junit.jupiter.api.Test;
 public class LibraryTests {
 
     private LibraryRepository repo;
+    private LibraryService service;
 
     @BeforeEach
     void setUp() {
         repo = new LibraryRepository();
+        service = new LibraryService(repo);
     }
 
     @Test
@@ -120,5 +122,38 @@ public class LibraryTests {
     void copiesOfBookAvailableReturnsCountOrZero() {
         assertEquals(3, repo.copiesOfBookAvailable("9780134685991"));
         assertEquals(0, repo.copiesOfBookAvailable("0000000000000"));
+    }
+
+    @Test
+    void serviceCheckoutSucceedsWhenRulesAreSatisfied() {
+        String result = service.checkout("M002", "9781617294945");
+
+        assertEquals("Checkout successful.", result);
+        assertTrue(repo.getCheckouts().get("M002").contains("9781617294945"));
+    }
+
+    @Test
+    void serviceCheckoutFailsWhenNoCopiesAreAvailable() {
+        String bookId = "9781492056270";
+        while (repo.getBooks().get(bookId).getAvailableCopies() > 0) {
+            repo.getBooks().get(bookId).decrementAvailableCopies();
+        }
+
+        String result = service.checkout("M002", bookId);
+
+        assertEquals("No copies available.", result);
+        assertFalse(repo.getCheckouts().get("M002").contains(bookId));
+    }
+
+    @Test
+    void serviceCheckoutFailsWhenMemberAlreadyHasThreeBooks() {
+        String memberId = "M002";
+        repo.getCheckouts().get(memberId).add("9780134685991");
+        repo.getCheckouts().get(memberId).add("9781617294945");
+        repo.getCheckouts().get(memberId).add("9781492056270");
+
+        String result = service.checkout(memberId, "9780134685991");
+
+        assertEquals("Member has reached the checkout limit.", result);
     }
 }

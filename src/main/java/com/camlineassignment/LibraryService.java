@@ -25,6 +25,12 @@ public class LibraryService {
         if (!repo.bookExists(bookId)) {
             return "Book not found.";
         }
+        if (repo.copiesOfBookAvailable(bookId) <= 0) {
+            return "No copies available.";
+        }
+        if (repo.getCheckouts().getOrDefault(memberId, new ArrayList<>()).size() >= 3) {
+            return "Member has reached the checkout limit.";
+        }
         return repo.checkout(memberId, bookId) ? "Checkout successful." : "Checkout failed.";
     }
 
